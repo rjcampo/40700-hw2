@@ -1,0 +1,29 @@
+---
+title: "MACS 40700 HW 2"
+author: "Richard Campo"
+date: "`r Sys.Date()`"
+output: github_output
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+setwd("C:/Users/RichardCampo/Documents/GitHub/40700-hw2")
+options(rstudio.help.showDataPreview = FALSE)
+```
+
+#Part 1: Portfolio 1 Proposal
+
+I will use the "Trust and Democratic Governance" data set from the Organization for Economic Cooperation and Development (OECD), available [here](https://data-explorer.oecd.org/vis?lc=en&fs[0]=Topic%2C1%7CGovernment%23GOV%23%7CGeneral%20government%23GOV_GG%23&pg=0&fc=Topic&bp=true&snb=14&vw=ov&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_GOV_TDG_SPS_GPC%40DF_GOV_TDG_2023&df[ag]=OECD.GOV.GIP&df[vs]=1.0&pd=%2C&dq=A.......&ly[rw]=REF_AREA&ly[cl]=MEASURE%2CSCALE&to[TIME_PERIOD]=false&lo=5&lom=LASTNPERIODS).
+
+My tentative research question is: "Trust in what levels and branches of government has the strongest association with perceived political efficacy, defined as 'having a say in what the government does?'"
+
+
+## Data Cleaning
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+s
+oecd_data <- read_csv("OECD governance data.csv")
+#glimpse(oecd_data)
+```
+
