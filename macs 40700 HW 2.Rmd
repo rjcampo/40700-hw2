@@ -74,10 +74,15 @@ ggplot(oecd_data, aes(x = TRUST_CL_HMH, y = TRUST_PE_EXT_CON)) +
     y = "Political efficacy")
 ```
 
-```{r}
+```{r, warning = FALSE}
 trust_vars <- c("TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH")
 
-for (var in trust_vars) {
+trust_labels <- c("Trust in civil service", "Trust in legislature", "Trust in courts")
+
+for (i in seq_along(trust_vars)) {
+  var <- trust_vars[i]
+  label <- trust_labels[i]
+  
   plot_title <- switch(
     var,
     "TRUST_CS_HMH" = "Trust in civil service vs. perceived political efficacy",
@@ -86,14 +91,16 @@ for (var in trust_vars) {
   )
   # .data[[]] converts the string to the column name
   print(ggplot(
-    oecd_data, aes(x = .data[[var]], y = TRUST_PE_EXT_CON)) +
-    geom_point() +
-    geom_smooth(method = "lm", se = FALSE) +
-    labs(
-      title = plot_title,
-      x = paste("Trust in", tools::toTitleCase(gsub("_", " ", var))),
-      y = "Political efficacy"
-    )
+    oecd_data, aes(x = .data[[var]], y = TRUST_PE_EXT_CON)) + 
+      geom_point(color = "deepskyblue3", alpha = 0.5, shape = 19) + 
+      geom_smooth(method = "lm", se = FALSE, color="deepskyblue3", size = 1.5) + 
+      labs(
+        title = plot_title, 
+        x = label, 
+        y = "Political efficacy"
+        ) + 
+      scale_x_continuous(name = label) + 
+      theme_minimal()
     )
 }
 ```
