@@ -22,8 +22,80 @@ My tentative research question is: "Trust in what levels and branches of governm
 ## Data Cleaning
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
-s
+
 oecd_data <- read_csv("OECD governance data.csv")
-#glimpse(oecd_data)
+glimpse(oecd_data)
 ```
+```{r}
+oecd_data <- oecd_data %>%
+  filter(REF_AREA != "OECD_REP")
+
+oecd_data <- oecd_data %>% 
+  select(`Reference area`, MEASURE, SCALE, OBS_VALUE)
+
+col_names <- c(country = "Reference area", measure = "MEASURE",
+               scale = "SCALE", percentage = "OBS_VALUE")
+
+oecd_data <- rename(oecd_data, all_of(col_names))
+
+oecd_data <- oecd_data %>% 
+  pivot_wider(names_from = c(measure, scale), values_from = percentage)
+```
+
+```{r, warning = FALSE}
+colnames(oecd_data)
+
+ggplot(oecd_data, aes(x = TRUST_CS_HMH, y = TRUST_PE_EXT_CON)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Trust in civil service vs. perceived political efficacy", 
+    x = "Trust in the civil service",
+    y = "Political efficacy")
+```
+
+```{r, warning = FALSE}
+ggplot(oecd_data, aes(x = TRUST_LE_HMH, y = TRUST_PE_EXT_CON)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Trust in legislature vs. perceived political efficacy", 
+    x = "Trust in legislature",
+    y = "Political efficacy")
+```
+
+```{r, warning = FALSE}
+ggplot(oecd_data, aes(x = TRUST_CL_HMH, y = TRUST_PE_EXT_CON)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Trust in courts vs. perceived political efficacy", 
+    x = "Trust in courts",
+    y = "Political efficacy")
+```
+
+```{r}
+trust_vars <- c("TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH")
+
+for (var in trust_vars) {
+  plot_title <- switch(
+    var,
+    "TRUST_CS_HMH" = "Trust in civil service vs. perceived political efficacy",
+    "TRUST_LE_HMH" = "Trust in legislature vs. perceived political efficacy",
+    "TRUST_CL_HMH" = "Trust in courts vs. perceived political efficacy"
+  )
+  # .data[[]] converts the string to the column name
+  print(ggplot(
+    oecd_data, aes(x = .data[[var]], y = TRUST_PE_EXT_CON)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(
+      title = plot_title,
+      x = paste("Trust in", tools::toTitleCase(gsub("_", " ", var))),
+      y = "Political efficacy"
+    )
+    )
+}
+```
+
 
