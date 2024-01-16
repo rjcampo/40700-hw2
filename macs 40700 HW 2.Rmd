@@ -25,9 +25,9 @@ library(tidyverse)
 library(patchwork)
 
 oecd_data <- read_csv("OECD governance data.csv")
-glimpse(oecd_data)
 ```
 ```{r}
+# Remove aggregate row
 oecd_data <- oecd_data %>%
   filter(REF_AREA != "OECD_REP")
 
@@ -36,7 +36,6 @@ oecd_data <- oecd_data %>%
 
 col_names <- c(country = "REF_AREA", measure = "MEASURE",
                scale = "SCALE", percentage = "OBS_VALUE")
-
 oecd_data <- rename(oecd_data, all_of(col_names))
 
 oecd_data <- oecd_data %>% 
@@ -45,10 +44,6 @@ oecd_data <- oecd_data %>%
 
 
 ```{r, warning = FALSE, message = FALSE}
-library(ggplot2)
-# Patchwork lets you combine separate plots into a single figure
-library(patchwork)
-
 trust_vars <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
 
 trust_labels <- c("Trust in national government", "Trust in local government", "Trust in civil service", "Trust in legislature", "Trust in courts", "Trust government use of data")
@@ -93,7 +88,13 @@ combined_plot <- wrap_plots(plots, ncol = 3) +
                   )
 
 print(combined_plot)
-
+# The extra data frame printing is a known bug in RStudio:
+# https://github.com/thomasp85/patchwork/issues/331
 ```
 
+```{r}
+
+
+
+```
 
