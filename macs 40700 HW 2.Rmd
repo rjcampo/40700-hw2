@@ -22,6 +22,7 @@ My tentative research question is: "Trust in what levels and branches of governm
 ## Data Cleaning
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(patchwork)
 
 oecd_data <- read_csv("OECD governance data.csv")
 glimpse(oecd_data)
@@ -31,9 +32,9 @@ oecd_data <- oecd_data %>%
   filter(REF_AREA != "OECD_REP")
 
 oecd_data <- oecd_data %>% 
-  select(`Reference area`, MEASURE, SCALE, OBS_VALUE)
+  select(REF_AREA, MEASURE, SCALE, OBS_VALUE)
 
-col_names <- c(country = "Reference area", measure = "MEASURE",
+col_names <- c(country = "REF_AREA", measure = "MEASURE",
                scale = "SCALE", percentage = "OBS_VALUE")
 
 oecd_data <- rename(oecd_data, all_of(col_names))
@@ -42,67 +43,57 @@ oecd_data <- oecd_data %>%
   pivot_wider(names_from = c(measure, scale), values_from = percentage)
 ```
 
-```{r, warning = FALSE}
-colnames(oecd_data)
 
-ggplot(oecd_data, aes(x = TRUST_CS_HMH, y = TRUST_PE_EXT_CON)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(
-    title = "Trust in civil service vs. perceived political efficacy", 
-    x = "Trust in the civil service",
-    y = "Political efficacy")
-```
+```{r, warning = FALSE, message = FALSE}
+library(ggplot2)
+# Patchwork lets you combine separate plots into a single figure
+library(patchwork)
 
-```{r, warning = FALSE}
-ggplot(oecd_data, aes(x = TRUST_LE_HMH, y = TRUST_PE_EXT_CON)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(
-    title = "Trust in legislature vs. perceived political efficacy", 
-    x = "Trust in legislature",
-    y = "Political efficacy")
-```
+trust_vars <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
 
-```{r, warning = FALSE}
-ggplot(oecd_data, aes(x = TRUST_CL_HMH, y = TRUST_PE_EXT_CON)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  labs(
-    title = "Trust in courts vs. perceived political efficacy", 
-    x = "Trust in courts",
-    y = "Political efficacy")
-```
+trust_labels <- c("Trust in national government", "Trust in local government", "Trust in civil service", "Trust in legislature", "Trust in courts", "Trust government use of data")
 
-```{r, warning = FALSE}
-trust_vars <- c("TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH")
-
-trust_labels <- c("Trust in civil service", "Trust in legislature", "Trust in courts")
+plots <- list()
 
 for (i in seq_along(trust_vars)) {
   var <- trust_vars[i]
   label <- trust_labels[i]
   
-  plot_title <- switch(
-    var,
-    "TRUST_CS_HMH" = "Trust in civil service vs. perceived political efficacy",
-    "TRUST_LE_HMH" = "Trust in legislature vs. perceived political efficacy",
-    "TRUST_CL_HMH" = "Trust in courts vs. perceived political efficacy"
-  )
   # .data[[]] converts the string to the column name
-  print(ggplot(
+  plot <- ggplot(
     oecd_data, aes(x = .data[[var]], y = TRUST_PE_EXT_CON)) + 
       geom_point(color = "deepskyblue3", alpha = 0.5, shape = 19) + 
-      geom_smooth(method = "lm", se = FALSE, color="deepskyblue3", size = 1.5) + 
+      stat_smooth(
+        method = "lm",
+        se = TRUE,
+        level = 0.90,
+        aes(fill = "Confidence Interval"),
+        color = "deepskyblue3",
+        size = 1.25,
+        alpha = 0.2
+      ) + 
       labs(
-        title = plot_title, 
         x = label, 
         y = "Political efficacy"
-        ) + 
+      ) + 
       scale_x_continuous(name = label) + 
+      # Color standard error shading
+      scale_fill_manual(values = "deepskyblue3", guide = FALSE) +
       theme_minimal()
-    )
+  
+  plots[[i]] <- plot
 }
+
+combined_plot <- wrap_plots(plots, ncol = 3) +
+  plot_annotation(title = "Trust in government vs political efficacy",
+                  # Center the title
+                  theme = theme(
+                    plot.title = element_text(hjust = 0.5)
+                    )
+                  )
+
+print(combined_plot)
+
 ```
 
 
