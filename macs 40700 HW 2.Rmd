@@ -16,8 +16,7 @@ options(rstudio.help.showDataPreview = FALSE)
 
 I will use the "Trust and Democratic Governance" data set from the Organization for Economic Cooperation and Development (OECD), available [here](https://data-explorer.oecd.org/vis?lc=en&fs[0]=Topic%2C1%7CGovernment%23GOV%23%7CGeneral%20government%23GOV_GG%23&pg=0&fc=Topic&bp=true&snb=14&vw=ov&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_GOV_TDG_SPS_GPC%40DF_GOV_TDG_2023&df[ag]=OECD.GOV.GIP&df[vs]=1.0&pd=%2C&dq=A.......&ly[rw]=REF_AREA&ly[cl]=MEASURE%2CSCALE&to[TIME_PERIOD]=false&lo=5&lom=LASTNPERIODS).
 
-My tentative research question is: "Trust in what levels and branches of government has the strongest association with perceived political efficacy, defined as 'having a say in what the government does?'"
-
+My tentative research question is: "Trust in what levels and branches of government has the strongest association with perceived political efficacy, defined as 'having a say in what the government does?'" In this case, the independent variable is the level of trust in government, and the dependent variable is political efficacy. 
 
 ## Data Cleaning
 ```{r, warning=FALSE, message=FALSE}
@@ -26,20 +25,35 @@ library(patchwork)
 
 oecd_data <- read_csv("OECD governance data.csv")
 ```
+
 ```{r}
-# Remove aggregate row
 oecd_data <- oecd_data %>%
-  filter(REF_AREA != "OECD_REP")
-
-oecd_data <- oecd_data %>% 
-  select(REF_AREA, MEASURE, SCALE, OBS_VALUE)
-
-col_names <- c(country = "REF_AREA", measure = "MEASURE",
-               scale = "SCALE", percentage = "OBS_VALUE")
-oecd_data <- rename(oecd_data, all_of(col_names))
+  filter(REF_AREA != "OECD_REP") %>%
+  select(
+    country = REF_AREA,
+    measure = MEASURE,
+    scale = SCALE,
+    percentage = OBS_VALUE
+    )
 
 oecd_data <- oecd_data %>% 
   pivot_wider(names_from = c(measure, scale), values_from = percentage)
+```
+
+## Plot 1: Distribution of Political Efficacy
+```{r}
+ggplot(oecd_data, aes(x = TRUST_PE_EXT_CON)) +
+  geom_histogram(binwidth = 10, fill = "deepskyblue3", color = "white", alpha = 0.7, show.legend = FALSE) +
+  labs(
+    title = "Distribution of Perceived Political Efficacy",
+    x = "Political Efficacy",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 
@@ -93,8 +107,22 @@ print(combined_plot)
 ```
 
 ```{r}
+trust_columns <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
 
+trust_data <- oecd_data[, trust_columns]
 
+trust_data_long <- pivot_longer(trust_data, cols = colnames(trust_data), names_to = "gov_type", values_to = "percentage")
+
+ggplot(trust_data_long, aes(x = gov_type, y = percentage, fill = gov_type)) +
+  geom_boxplot(show.legend = FALSE) +
+  labs(
+    title = "Distribution of trust levels across government types",
+    x = "Government type",
+    y = "Percentage reporting high or moderately high trust"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
