@@ -27,7 +27,7 @@ trust_plot_data <- data.frame(
   Trust_Category = names(mean_trust),
   Mean_Trust_Value = mean_trust
 )
-
+ # Bar chart
 ggplot(trust_plot_data, aes(x = reorder(Trust_Category, -Mean_Trust_Value), y = Mean_Trust_Value, fill = Trust_Category)) +
   geom_bar(stat = "identity", color = "white") +
   labs(
@@ -37,7 +37,7 @@ ggplot(trust_plot_data, aes(x = reorder(Trust_Category, -Mean_Trust_Value), y = 
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_fill_brewer(palette = "Dark2")
+  scale_fill_brewer(palette = "Set3")
 
 # Violin plots
 # Assuming oecd_data is your data frame with relevant columns
@@ -57,7 +57,7 @@ ggplot(trust_data_long, aes(x = Trust_Category, y = Trust_Value, fill = Trust_Ca
     x = "Trust Category",
     y = "Trust Value"
   ) +
-  scale_fill_brewer(palette = "Dark2") +
+  scale_fill_brewer(palette = "Set3") +
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),

@@ -43,7 +43,7 @@ oecd_data <- oecd_data %>%
 ## Plot 1: Distribution of Political Efficacy
 ```{r}
 ggplot(oecd_data, aes(x = TRUST_PE_EXT_CON)) +
-  geom_histogram(binwidth = 10, fill = "deepskyblue3", color = "white", alpha = 0.7, show.legend = FALSE) +
+  geom_histogram(binwidth = 10, fill = "deepskyblue3", color = "white", alpha = 0.7, show.legend = FALSE, na.rm = TRUE) +
   labs(
     title = "Distribution of Perceived Political Efficacy",
     x = "Political Efficacy",
@@ -56,8 +56,29 @@ ggplot(oecd_data, aes(x = TRUST_PE_EXT_CON)) +
   )
 ```
 
+## Plot 2: Distribution of the Trust Variables
+```{r}
+trust_columns <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
 
-```{r, warning = FALSE, message = FALSE}
+trust_data <- oecd_data[, trust_columns]
+
+trust_data_long <- pivot_longer(trust_data, cols = colnames(trust_data), names_to = "gov_type", values_to = "percentage")
+
+ggplot(trust_data_long, aes(x = gov_type, y = percentage, fill = gov_type)) +
+  geom_boxplot(show.legend = FALSE, na.rm = TRUE) +
+  labs(
+    title = "Distribution of trust levels across government types",
+    x = "Government type",
+    y = "Percentage reporting high or moderately high trust"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set3") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+## Plot 3: Trust in government vs. political efficacy
+```{r}
 trust_vars <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
 
 trust_labels <- c("Trust in national government", "Trust in local government", "Trust in civil service", "Trust in legislature", "Trust in courts", "Trust government use of data")
@@ -71,20 +92,21 @@ for (i in seq_along(trust_vars)) {
   # .data[[]] converts the string to the column name
   plot <- ggplot(
     oecd_data, aes(x = .data[[var]], y = TRUST_PE_EXT_CON)) + 
-      geom_point(color = "deepskyblue3", alpha = 0.5, shape = 19) + 
+      geom_point(
+        color = "deepskyblue3", alpha = 0.5, shape = 19, na.rm = TRUE
+        ) + 
       stat_smooth(
         method = "lm",
+        formula = y ~ x,
         se = TRUE,
         level = 0.90,
         aes(fill = "Confidence Interval"),
         color = "deepskyblue3",
         size = 1.25,
-        alpha = 0.2
+        alpha = 0.2,
+        na.rm = TRUE
       ) + 
-      labs(
-        x = label, 
-        y = "Political efficacy"
-      ) + 
+      labs(x = label, y = "Political efficacy") + 
       scale_x_continuous(name = label) + 
       # Color standard error shading
       scale_fill_manual(values = "deepskyblue3", guide = FALSE) +
@@ -106,23 +128,4 @@ print(combined_plot)
 # https://github.com/thomasp85/patchwork/issues/331
 ```
 
-```{r}
-trust_columns <- c("TRUST_NG_HMH", "TRUST_LG_HMH", "TRUST_CS_HMH", "TRUST_LE_HMH", "TRUST_CL_HMH", "TRUST_DAT_LIK")
-
-trust_data <- oecd_data[, trust_columns]
-
-trust_data_long <- pivot_longer(trust_data, cols = colnames(trust_data), names_to = "gov_type", values_to = "percentage")
-
-ggplot(trust_data_long, aes(x = gov_type, y = percentage, fill = gov_type)) +
-  geom_boxplot(show.legend = FALSE) +
-  labs(
-    title = "Distribution of trust levels across government types",
-    x = "Government type",
-    y = "Percentage reporting high or moderately high trust"
-  ) +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Set3") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
 
