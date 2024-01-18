@@ -18,7 +18,7 @@ I will use the "Trust and Democratic Governance" data set from the Organization 
 
 My tentative research question is: "Trust in what levels and branches of government has the strongest association with perceived political efficacy, defined as 'having a say in what the government does?'" In this case, the independent variable is the level of trust in government, and the dependent variable is political efficacy.
 
-One challenge that I am facing is that this data set is very simple, so it is harder to make insightful and enlightening graphs. Another issue I have encountered is that the data is hard to work with whether it is in long form or wide form. If I leave it in long form, it is not tidy because the different variables are listed together in on column, "Measure." But when I convert it to wide format, I cannot map by government type. As a result, I switched back and forth between wide and long format.
+One challenge that I am facing is that this data set is very simple, so it is harder to make insightful and enlightening graphs. Another issue I have encountered is that the data is hard to work with whether it is in long form or wide form. If I leave it in long form, it is not tidy because the different variables are listed together in one column, "Measure." But when I convert it to wide format, I cannot map by government type. As a result, I switched back and forth between wide and long format.
 
 ## Data Cleaning
 ```{r, warning=FALSE, message=FALSE}
@@ -138,7 +138,7 @@ print(combined_plot)
 
 ## Part 2: EDA and Critique
 ### Plot 1 rough draft and narrative
-Plot 1 is reproduced below so you don't have to scroll up:
+Plot 1 is reproduced below so you do not have to scroll up:
 ```{r, echo = FALSE}
 ggplot(oecd_data, aes(x = TRUST_PE_EXT_CON)) +
   geom_histogram(binwidth = 10, fill = "deepskyblue3", color = "white", alpha = 0.7, na.rm = TRUE) +
@@ -161,7 +161,21 @@ I think a simple histogram like this one is a good way to show the distribution 
 
 I added some additional touches like fixing the y-axis to increment by 2 instead of 2.5 to make it easier to read and since the data contains only integers. I also rotated the x axis tick labels to make the chart look less boxy. Additionally, I added the white lines separating the histogram bars were to make the plot look cleaner, and I added the partial transparency to make the bars look less painted on. Lastly, I increased the font size to make the text easier to read, and I used the minimal theme to make the bars pop.
 
-I did not have trouble doing anything since the ggplot documentation and Stack Overflow have plenty of examples, and I'm open to any suggestions.
+I did not have trouble doing anything since the ggplot documentation, Stack Overflow, and our course slides have plenty of examples, and I am open to any suggestions on how to improve the plot.
 
 ### Design Choices
+The story for the research question is that if citizens feel that they can trust their government, then they may be more likely to feel that they have a say in what the government does. Furthermore, it would be interesting to know trust in which part of government is the most important for making citizens feel that they have a say.
 
+For my first plot, I wanted to show the distribution of the dependent variable, political efficacy, because that is the target of this research question. Looking at the distribution shown in the histogram, we can see that most OECD countries have a political efficacy value of 40 to 50%, while a few have lower values. This left skewed pattern is useful to know since it indicates that the data is not normally distributed and that there are some interesting cases (Japan and Latvia if you search the data) that have low levels of reported political efficacy compared to other OECD countries.
+
+I selected a histogram over other ways to plot a single continuous variable like a density plot or dot plot because most readers will be familiar with and understand a histogram. Density plots have a harder to interpret y-axis, and I think histograms look better than dot plots. A frequency polygon is another option, but is more useful for making comparisons across factors, which is not what I am trying to do with this graph.
+
+I think interactivity could make this graph more interesting. For example, it would be cool to add the option to hover over a histogram bar and see which countries were included in it. It could also be interesting if I found political efficacy data from previous years and added a slider to see how the histogram changes over time. Additionally, I could add a drop down to select only certain groups of countries, such as countries in Europe and countries outside Europe. Maybe I could even add the option to change the view to a density plot if the reader really likes density plots.
+
+For my second plot, I wanted to show the distributions of each of the trust in government variables, and I think a box plot made the most sense for this. The box plot shows summary statistics for each variable as well as outliers, and most people who have taken a basic statistics class will know how to read a box plot. I also tried making violin plots, and they are attractive looking, but they I found them harder to read than a box plot and too hard to compare. Box plots give you numbers for the median and quartiles, but violin plots just show you the distributions without clear points of comparison. I could also potentially use a bar chart of the averages of each variable, but that provides much less information than a box plot.
+
+To add interactivity to the box plot, I could add a time slider if I find previous years' data to view how the distributions changed over time. I could also add the option to switch to a violin plot for readers who prefer those.
+
+And then for the third plot, I wanted to examine the research question: "Trust in which level of government is most important for creating a sense of political efficacy?" I also included trust in the government's use of data to have an even number of plots and since it is related and interesting by itself. 
+
+Looking at the plots alone without any regression output, it looks like all are more or less equally important except trust in local government, which shows a weakly negative correlation with perceived political efficacy. Given the small sample size of OECD countries, I do not think this finding should be taken too seriously, but it is interesting to know that trust in local government is less predictive of political efficacy than the other variables are. Lastly, I think adding interactivity to this last plot would make it too complicated, so I think it should stay static so the reader can focus on the data presented. 
